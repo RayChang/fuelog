@@ -1,0 +1,154 @@
+name: Claude PR Assistant
+
+on:
+  issue_comment:
+    types: [created]
+  pull_request_review_comment:
+    types: [created]
+  issues:
+    types: [opened, assigned]
+  pull_request_review:
+    types: [submitted]
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  claude-code-action:
+    if: |
+      (github.event_name == 'issue_comment' && contains(github.event.comment.body, '@claude')) ||
+      (github.event_name == 'pull_request_review_comment' && contains(github.event.comment.body, '@claude')) ||
+      (github.event_name == 'pull_request_review' && contains(github.event.review.body, '@claude')) ||
+      (github.event_name == 'issues' && contains(github.event.issue.body, '@claude')) ||
+      (github.event_name == 'pull_request' && github.event.action == 'opened')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: write
+      id-token: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run Claude PR Action
+        uses: anthropics/claude-code-action@beta
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          timeout_minutes: '60'
+          mode: tag
+          # Configure MCP servers for enhanced functionality
+          mcp_config: |
+            {
+              "mcpServers": {
+                "context7": {
+                  "command": "npx",
+                  "args": ["-y", "@context7/mcp-server"]
+                }
+              }
+            }
+          allowed_tools: 'mcp__context7__get-library-docs,mcp__context7__resolve-library-id'
+          # Custom instruction example
+          custom_instructions: |
+            As a professional code reviewer, please provide detailed review for this Turborepo monorepo project:
+
+            **Context7 Documentation Lookup (ALWAYS USE FIRST):**
+            Before analyzing any code, ALWAYS use Context7 MCP tools to gather relevant documentation:
+            - Use `mcp__context7__resolve-library-id` to find the correct library IDs for technologies mentioned in the code
+            - Use `mcp__context7__get-library-docs` to retrieve up-to-date documentation for:
+              - Next.js (App Router patterns, best practices)
+              - Prisma ORM (schema design, query optimization)
+              - TailwindCSS (utility classes, responsive design)
+              - Turborepo (monorepo configuration, caching strategies)
+              - BeautifulSoup4 (web scraping best practices)
+              - TypeScript (type definitions, advanced patterns)
+            - Reference the retrieved documentation when providing specific recommendations
+            - Cite documentation sources when suggesting improvements
+
+            **Monorepo Architecture (Turborepo):**
+            - Check if turbo.json configuration is reasonable (consult Turborepo docs via Context7)
+            - Verify package dependencies and build order
+            - Confirm caching strategy and parallel processing settings
+            - Check workspace configuration and inter-package dependencies
+
+            **Python Web Scraping (BeautifulSoup4):**
+            - Check error handling and retry mechanisms for web scraping (reference BeautifulSoup4 docs)
+            - Verify HTTP request rate limiting and polite crawling
+            - Confirm data cleaning and validation logic
+            - Check exception handling and logging
+            - Evaluate scraper performance and memory usage
+
+            **Next.js App Router Best Practices:**
+            - Check app directory structure and route design (reference Next.js App Router docs)
+            - Verify Server Components vs Client Components usage
+            - Confirm data fetching strategies (fetch, cache, revalidate)
+            - Check loading.js, error.js, not-found.js implementation
+            - Evaluate SEO and metadata configuration
+
+            **TailwindCSS Styling:**
+            - Check if utility class usage is appropriate (reference TailwindCSS docs)
+            - Verify responsive design implementation
+            - Confirm there are no duplicate or redundant styles
+            - Check custom component and design system consistency
+            - Evaluate CSS bundle size optimization
+
+            **Prisma ORM Database:**
+            - Check schema.prisma design and relationships (reference Prisma docs)
+            - Verify query optimization and N+1 problems
+            - Confirm database migration strategy and version control
+            - Check type safety and Prisma Client usage
+            - Evaluate data validation and error handling
+
+            **Cross-technology Integration:**
+            - Python scraper and Next.js data flow integration
+            - Database schema and frontend requirements matching
+            - API routes and data processing performance
+            - Error handling and user experience
+
+            **Code Quality and Security:**
+            - TypeScript type definition completeness (reference TypeScript docs if needed)
+            - Environment variables and sensitive data handling
+            - API security and input validation
+            - Test coverage and quality
+            - Documentation and comment completeness
+
+            **Review Process:**
+            1. FIRST: Use Context7 to lookup documentation for all relevant technologies
+            2. Analyze code against the retrieved best practices and guidelines
+            3. Provide specific improvement suggestions with documentation references
+            4. Include code examples when helpful
+            5. Pay special attention to monorepo architecture best practices
+
+            Always cite the documentation sources retrieved from Context7 when making recommendations.
+          experimental_allowed_domains: |
+            # Basic services
+            .anthropic.com
+            .github.com
+            api.github.com
+            .githubusercontent.com
+
+            # Package management
+            registry.npmjs.org          # NPM packages (Next.js, TailwindCSS, Turborepo)
+            pypi.org                    # Python packages (BeautifulSoup4, requests, etc.)
+
+            # Framework and tool documentation
+            nextjs.org                  # Next.js official documentation
+            tailwindcss.com             # TailwindCSS documentation
+            prisma.io                   # Prisma documentation
+            turbo.build                 # Turborepo documentation
+
+            # Python related
+            docs.python.org             # Python official documentation
+            requests.readthedocs.io     # Requests library documentation
+            beautiful-soup-4.readthedocs.io  # BeautifulSoup4 documentation
+
+            # Development tools and best practices
+            developer.mozilla.org       # Web standards and MDN documentation
+            typescript-eslint.io        # TypeScript ESLint
+            eslint.org                  # ESLint rules
+
+            # Optional: Testing and deployment related
+            jestjs.io                   # If using Jest testing
+            playwright.dev              # If using Playwright
+            vercel.com                  # If deploying to Vercel
