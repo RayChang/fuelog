@@ -8,106 +8,130 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model FuelPrice {
+  id             String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  brand          BrandCode
+  fuel_type      FuelType
+  price          Decimal   @db.Decimal(12, 2)
+  effective_date DateTime  @db.Date
+  created_at     DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at     DateTime  @default(now()) @db.Timestamptz(6)
+
+  @@unique([brand, fuel_type, effective_date], map: "fuel_prices_brand_fuel_type_effective_date_idx")
+  @@index([brand, fuel_type])
+  @@index([effective_date])
+  @@map("fuel_prices")
+}
+
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
-model fuel_records {
-  id              String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  tenant_id       String         @db.Uuid
-  vehicle_id      String         @db.Uuid
-  user_id         String         @db.Uuid
-  gas_station_id  String         @db.Uuid
-  fuel_type       fuel_type
-  price_per_liter Decimal        @db.Decimal(12, 2)
-  liters          Decimal        @db.Decimal(8, 3)
-  fueling_method  fueling_method
+model FuelRecord {
+  id              String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenant_id       String       @db.Uuid
+  vehicle_id      String       @db.Uuid
+  user_id         String       @db.Uuid
+  gas_station_id  String       @db.Uuid
+  fuel_type       FuelType
+  price_per_liter Decimal      @db.Decimal(12, 2)
+  liters          Decimal      @db.Decimal(8, 3)
+  fueling_method  FuelingMethod
   mileage         Int
-  fueled_at       DateTime       @db.Timestamptz(6)
-  created_at      DateTime       @default(now()) @db.Timestamptz(6)
-  updated_at      DateTime       @default(now()) @db.Timestamptz(6)
-  gas_stations    gas_stations   @relation(fields: [gas_station_id], references: [id], onUpdate: NoAction)
-  tenants         tenants        @relation(fields: [tenant_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  users           users          @relation(fields: [tenant_id, user_id], references: [tenant_id, id], onUpdate: NoAction)
-  vehicles        vehicles       @relation(fields: [tenant_id, vehicle_id], references: [tenant_id, id], onDelete: Cascade, onUpdate: NoAction)
+  fueled_at       DateTime     @db.Timestamptz(6)
+  created_at      DateTime     @default(now()) @db.Timestamptz(6)
+  updated_at      DateTime     @default(now()) @db.Timestamptz(6)
+  gasStation      GasStation   @relation(fields: [gas_station_id], references: [id], onUpdate: NoAction)
+  tenant          Tenant       @relation(fields: [tenant_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  user            User         @relation(fields: [tenant_id, user_id], references: [tenant_id, id], onUpdate: NoAction)
+  vehicle         Vehicle      @relation(fields: [tenant_id, vehicle_id], references: [tenant_id, id], onDelete: Cascade, onUpdate: NoAction)
 
   @@index([tenant_id, user_id, fueled_at])
   @@index([tenant_id, vehicle_id, fueled_at])
+  @@map("fuel_records")
 }
 
-model gas_stations {
-  id           String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  brand        brand_code
+model GasStation {
+  id           String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  brand        BrandCode
   name         String
-  latitude     Decimal        @db.Decimal(10, 7)
-  longitude    Decimal        @db.Decimal(10, 7)
-  created_at   DateTime       @default(now()) @db.Timestamptz(6)
-  updated_at   DateTime       @default(now()) @db.Timestamptz(6)
-  deleted_at   DateTime?      @db.Timestamptz(6)
-  fuel_records fuel_records[]
+  latitude     Decimal      @db.Decimal(10, 7)
+  longitude    Decimal      @db.Decimal(10, 7)
+  created_at   DateTime     @default(now()) @db.Timestamptz(6)
+  updated_at   DateTime     @default(now()) @db.Timestamptz(6)
+  deleted_at   DateTime?    @db.Timestamptz(6)
+  fuelRecords  FuelRecord[]
 
   @@index([brand])
-  @@index([name])
   @@index([latitude, longitude])
+  @@index([name])
+  @@map("gas_stations")
 }
 
-model tenants {
-  id                 String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+model Tenant {
+  id                 String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   name               String
-  created_at         DateTime             @default(now()) @db.Timestamptz(6)
-  updated_at         DateTime             @default(now()) @db.Timestamptz(6)
-  deleted_at         DateTime?            @db.Timestamptz(6)
-  fuel_records       fuel_records[]
-  users              users[]
-  vehicle_ownerships vehicle_ownerships[]
-  vehicles           vehicles[]
+  created_at         DateTime            @default(now()) @db.Timestamptz(6)
+  updated_at         DateTime            @default(now()) @db.Timestamptz(6)
+  deleted_at         DateTime?           @db.Timestamptz(6)
+  fuelRecords        FuelRecord[]
+  users              User[]
+  vehicleOwnerships  VehicleOwnership[]
+  vehicles           Vehicle[]
+
+  @@map("tenants")
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
-model users {
-  id                 String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  tenant_id          String               @db.Uuid
+model User {
+  id                 String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenant_id          String              @db.Uuid
   email              String
   email_norm         String
   password_hash      String
   birth_year         Int
-  gender             gender
-  created_at         DateTime             @default(now()) @db.Timestamptz(6)
-  updated_at         DateTime             @default(now()) @db.Timestamptz(6)
-  deleted_at         DateTime?            @db.Timestamptz(6)
-  fuel_records       fuel_records[]
-  tenants            tenants              @relation(fields: [tenant_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  vehicle_ownerships vehicle_ownerships[]
-  vehicles           vehicles[]
+  gender             Gender
+  created_at         DateTime            @default(now()) @db.Timestamptz(6)
+  updated_at         DateTime            @default(now()) @db.Timestamptz(6)
+  deleted_at         DateTime?           @db.Timestamptz(6)
+  fuelRecords        FuelRecord[]
+  tenant             Tenant              @relation(fields: [tenant_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  vehicleOwnerships  VehicleOwnership[]
+  vehicles           Vehicle[]
 
   @@unique([tenant_id, email_norm], map: "users_tenant_id_email_norm_idx")
   @@unique([tenant_id, id], map: "users_tenant_id_id_idx")
   @@index([tenant_id])
+  @@map("users")
 }
 
-model vehicle_brands {
-  id             String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name           String           @unique(map: "vehicle_brands_name_idx")
-  created_at     DateTime         @default(now()) @db.Timestamptz(6)
-  updated_at     DateTime         @default(now()) @db.Timestamptz(6)
-  deleted_at     DateTime?        @db.Timestamptz(6)
-  vehicle_models vehicle_models[]
-  vehicles       vehicles[]
-}
-
-model vehicle_models {
+model VehicleBrand {
   id             String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  brand_id       String         @db.Uuid
-  name           String
+  name           String         @unique(map: "vehicle_brands_name_idx")
   created_at     DateTime       @default(now()) @db.Timestamptz(6)
   updated_at     DateTime       @default(now()) @db.Timestamptz(6)
   deleted_at     DateTime?      @db.Timestamptz(6)
-  vehicle_brands vehicle_brands @relation(fields: [brand_id], references: [id], onUpdate: NoAction)
-  vehicles       vehicles[]
+  vehicleModels  VehicleModel[]
+  vehicles       Vehicle[]
+
+  @@map("vehicle_brands")
+}
+
+model VehicleModel {
+  id           String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  brand_id     String       @db.Uuid
+  name         String
+  created_at   DateTime     @default(now()) @db.Timestamptz(6)
+  updated_at   DateTime     @default(now()) @db.Timestamptz(6)
+  deleted_at   DateTime?    @db.Timestamptz(6)
+  vehicleBrand VehicleBrand @relation(fields: [brand_id], references: [id], onUpdate: NoAction)
+  vehicles     Vehicle[]
 
   @@unique([brand_id, name], map: "vehicle_models_brand_id_name_idx")
+  @@map("vehicle_models")
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
-model vehicle_ownerships {
+model VehicleOwnership {
   id         String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   tenant_id  String    @db.Uuid
   vehicle_id String    @db.Uuid
@@ -118,79 +142,74 @@ model vehicle_ownerships {
   created_at DateTime  @default(now()) @db.Timestamptz(6)
   updated_at DateTime  @default(now()) @db.Timestamptz(6)
   deleted_at DateTime? @db.Timestamptz(6)
-  tenants    tenants   @relation(fields: [tenant_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  users      users     @relation(fields: [tenant_id, user_id], references: [tenant_id, id], onUpdate: NoAction)
-  vehicles   vehicles  @relation(fields: [tenant_id, vehicle_id], references: [tenant_id, id], onDelete: Cascade, onUpdate: NoAction)
+  tenant     Tenant    @relation(fields: [tenant_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  user       User      @relation(fields: [tenant_id, user_id], references: [tenant_id, id], onUpdate: NoAction)
+  vehicle    Vehicle   @relation(fields: [tenant_id, vehicle_id], references: [tenant_id, id], onDelete: Cascade, onUpdate: NoAction)
 
   @@unique([tenant_id, vehicle_id, user_id, is_owner], map: "vehicle_ownerships_tenant_id_vehicle_id_user_id_is_owner_idx")
   @@index([tenant_id, user_id])
   @@index([tenant_id, vehicle_id])
+  @@map("vehicle_ownerships")
 }
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
-model vehicles {
-  id                 String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  tenant_id          String               @db.Uuid
-  brand_id           String               @db.Uuid
-  model_id           String               @db.Uuid
+model Vehicle {
+  id                 String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenant_id          String              @db.Uuid
+  brand_id           String              @db.Uuid
+  model_id           String              @db.Uuid
   year               Int
   displacement       Int
   current_mileage    Int
-  owner_id           String               @db.Uuid
-  created_at         DateTime             @default(now()) @db.Timestamptz(6)
-  updated_at         DateTime             @default(now()) @db.Timestamptz(6)
-  deleted_at         DateTime?            @db.Timestamptz(6)
-  fuel_records       fuel_records[]
-  vehicle_ownerships vehicle_ownerships[]
-  vehicle_brands     vehicle_brands       @relation(fields: [brand_id], references: [id], onUpdate: NoAction)
-  vehicle_models     vehicle_models       @relation(fields: [model_id], references: [id], onUpdate: NoAction)
-  tenants            tenants              @relation(fields: [tenant_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  users              users                @relation(fields: [tenant_id, owner_id], references: [tenant_id, id], onUpdate: NoAction)
+  owner_id           String              @db.Uuid
+  created_at         DateTime            @default(now()) @db.Timestamptz(6)
+  updated_at         DateTime            @default(now()) @db.Timestamptz(6)
+  deleted_at         DateTime?           @db.Timestamptz(6)
+  fuelRecords        FuelRecord[]
+  vehicleOwnerships  VehicleOwnership[]
+  vehicleBrand       VehicleBrand        @relation(fields: [brand_id], references: [id], onUpdate: NoAction)
+  vehicleModel       VehicleModel        @relation(fields: [model_id], references: [id], onUpdate: NoAction)
+  tenant             Tenant              @relation(fields: [tenant_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  owner              User                @relation(fields: [tenant_id, owner_id], references: [tenant_id, id], onUpdate: NoAction)
 
   @@unique([tenant_id, id], map: "vehicles_tenant_id_id_idx")
   @@index([tenant_id, brand_id, model_id])
   @@index([tenant_id, owner_id])
+  @@map("vehicles")
 }
 
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
-model fuel_prices {
-  id             String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  brand          brand_code
-  fuel_type      fuel_type
-  price          Decimal    @db.Decimal(12, 2)
-  effective_date DateTime   @db.Date
-  created_at     DateTime   @default(now()) @db.Timestamptz(6)
-  updated_at     DateTime   @default(now()) @db.Timestamptz(6)
-
-  @@unique([brand, fuel_type, effective_date], map: "fuel_prices_brand_fuel_type_effective_date_idx")
-  @@index([brand, fuel_type])
-  @@index([effective_date])
-}
-
-enum brand_code {
+enum BrandCode {
   CPC
   FORMOSA
   NPC
   TAYA
   FUMAO
   OTHER
+
+  @@map("brand_code")
 }
 
-enum fuel_type {
+enum FuelType {
   NINETY_TWO
   NINETY_FIVE
   NINETY_EIGHT
   DIESEL
+
+  @@map("fuel_type")
 }
 
-enum fueling_method {
+enum FuelingMethod {
   SELF_SERVICE
   ATTENDANT
+
+  @@map("fueling_method")
 }
 
-enum gender {
+enum Gender {
   MALE
   FEMALE
   UNDISCLOSED
+
+  @@map("gender")
 }
