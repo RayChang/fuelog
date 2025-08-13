@@ -1,6 +1,8 @@
+
 # Fuelog Crawler
 
-A CLI tool scaffold using standard Python package structure, installable via `uv tool install`.
+A modern Python CLI tool scaffold using [typer](https://typer.tiangolo.com/) for easy command-line development. Installable via `uv tool install`.
+
 
 ## 📁 Project Structure
 
@@ -18,37 +20,43 @@ apps/crawler/
 └── README.md               # Project documentation
 ```
 
+
 ## 🚀 Quick Start
 
 ### Install Dependencies
 
 ```bash
-# Install dependencies using uv
+# Install all dependencies
 uv sync
 ```
 
-### Development Execution
+
+
+### CLI Usage Examples
+
+After installation, you can use the CLI directly:
 
 ```bash
-# Method 1: Using npm scripts
-npm run dev
+# Run CLI commands
+fuelog-crawler hello
+fuelog-crawler info
 
-# Method 2: Direct uv usage
-uv run python -m fuelog_crawler
-
-# Method 3: Using CLI command
-uv run fuelog-crawler
+# Or use python -m
+python -m fuelog_crawler info
 ```
+
+
 
 ### System Installation
 
 ```bash
-# Install to system (globally available)
+# Install globally
 uv tool install .
 
-# Use the system-installed command
-fuelog-crawler
+# Use the installed command
+fuelog-crawler hello
 ```
+
 
 ## 🛠️ Development
 
@@ -82,6 +90,7 @@ npm run test:watch
 npm run build
 ```
 
+
 ## 🏗️ Turbo Integration
 
 This project is integrated into the monorepo's turbo workflow:
@@ -93,6 +102,7 @@ pnpm turbo run python:lint --filter=crawler
 pnpm turbo run python:run --filter=crawler
 ```
 
+
 ## 📦 Tech Stack
 
 - **Python 3.13+** - Runtime environment
@@ -102,18 +112,43 @@ pnpm turbo run python:run --filter=crawler
 - **MyPy** - Type checking
 - **pytest** - Testing framework
 
+
 ## 🗑️ Uninstall
 
 ```bash
 uv tool uninstall fuelog-crawler
 ```
 
-## 💡 Extension Guide
 
-1. **Add new features**: Add new modules in `src/fuelog_crawler/`
-2. **Update CLI**: Modify `src/fuelog_crawler/cli.py`
-3. **Add tests**: Add test files in the `tests/` directory
-4. **Update dependencies**: Modify `dependencies` in `pyproject.toml`
+
+## 💡 CLI Extension Guide
+
+This tool uses [typer](https://typer.tiangolo.com/) as the CLI framework, making it easy to add new commands:
+
+1. Add a new function in `src/fuelog_crawler/cli.py` and decorate it with `@app.command()`
+2. Reinstall/sync dependencies to use the new command
+
+Example:
+
+```python
+import typer
+app = typer.Typer()
+
+@app.command()
+def hello(name: str = "world"):
+	print(f"👋 Hello, {name}!")
+
+if __name__ == "__main__":
+	app()
+```
+
+## Development Workflow
+
+1. **Add new features**: Create new modules in `src/fuelog_crawler/`
+2. **Extend CLI**: Edit `src/fuelog_crawler/cli.py`
+3. **Write tests**: Add test files in the `tests/` directory
+4. **Update dependencies**: Edit `dependencies` in `pyproject.toml`
+
 
 ## 📄 License
 
