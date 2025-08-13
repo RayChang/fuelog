@@ -9,12 +9,12 @@
     "lint:fix": "uv run ruff check . --fix",
     "check-types": "uv run mypy .",
     "test": "uv run pytest",
-    "test:watch": "uv run pytest --watch",
-    "install": "uv sync",
-    "python:install": "uv sync",
+    "test:watch": "uv run pytest --lf --tb=short",
+    "sync": "uv sync",
+    "python:sync": "uv sync",
     "python:lint": "uv run ruff check .",
     "python:type-check": "uv run mypy .",
     "python:test": "uv run pytest",
-    "python:run": "uv run python -m fuelog_crawler"
+    "python:run": "uv run python -m fuelog_crawler hello"
   }
 }

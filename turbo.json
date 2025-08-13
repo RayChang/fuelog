@@ -30,7 +30,7 @@
       "persistent": true
     },
     // Python related tasks
-    "python:install": {
+    "python:sync": {
       "inputs": [
         "pyproject.toml",
         "uv.lock"
@@ -41,7 +41,7 @@
     },
     "python:lint": {
       "dependsOn": [
-        "python:install"
+        "python:sync"
       ],
       "inputs": [
         "**/*.py",
@@ -51,7 +51,7 @@
     },
     "python:type-check": {
       "dependsOn": [
-        "python:install"
+        "python:sync"
       ],
       "inputs": [
         "**/*.py",
@@ -61,7 +61,7 @@
     },
     "python:test": {
       "dependsOn": [
-        "python:install"
+        "python:sync"
       ],
       "inputs": [
         "**/*.py",
@@ -74,7 +74,7 @@
     },
     "python:run": {
       "dependsOn": [
-        "python:install"
+        "python:sync"
       ],
       "cache": false,
       "persistent": true

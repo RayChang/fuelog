@@ -2,15 +2,17 @@
 
 import subprocess
 import sys
+from pathlib import Path
 
 
 def test_cli_help():
     """Test CLI help command execution."""
+    project_root = Path(__file__).parent.parent
     result = subprocess.run(
         [sys.executable, "-m", "fuelog_crawler.cli", "--help"],
         capture_output=True,
         text=True,
-        cwd="src"
+        cwd=project_root / "src"
     )
     assert result.returncode == 0
 
@@ -27,6 +29,6 @@ def test_module_import():
 
 def test_main_module():
     """Test that __main__.py exists for module execution."""
-    import os
-    main_file = os.path.join("src", "fuelog_crawler", "__main__.py")
-    assert os.path.exists(main_file)
+    project_root = Path(__file__).parent.parent
+    main_file = project_root / "src" / "fuelog_crawler" / "__main__.py"
+    assert main_file.exists()
