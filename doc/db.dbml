@@ -1,0 +1,195 @@
+Project {
+  database_type: 'PostgreSQL'
+  note: 'Multi-tenant; composite FKs & uniques include tenant_id; RLS in SQL; requires pgcrypto for `gen_random_uuid()`; updated_at is app/trigger-maintained. Soft delete via deleted_at (timestamptz, nullable) except fuel_records and fuel_prices. Passwords are stored as hashes. All timestamps are UTC.'
+}
+
+Enum gender {
+  MALE
+  FEMALE
+  UNDISCLOSED
+}
+
+Enum fuel_type {
+  NINETY_TWO
+  NINETY_FIVE
+  NINETY_EIGHT
+  DIESEL
+}
+
+Enum fueling_method {
+  SELF_SERVICE
+  ATTENDANT
+}
+
+Enum brand_code {
+  CPC
+  FORMOSA
+  NPC
+  TAYA
+  FUMAO
+  OTHER
+}
+
+Table tenants {
+  id uuid [pk, default: 'gen_random_uuid()']
+  name text [not null]
+  created_at timestamptz [not null, default: 'now()']
+  updated_at timestamptz [not null, default: 'now()']
+  deleted_at timestamptz
+}
+
+Table users {
+  id uuid [pk, default: 'gen_random_uuid()']
+  tenant_id uuid [not null]
+  email text [not null]
+  email_norm text [not null]
+  password_hash text [not null, note: 'Store password as hash']
+  birth_year integer [not null, note: 'Year only']
+  gender gender [not null]
+  created_at timestamptz [not null, default: 'now()']
+  updated_at timestamptz [not null, default: 'now()']
+  deleted_at timestamptz
+
+  indexes {
+    (tenant_id, email_norm) [unique]
+    (tenant_id, id) [unique]
+    (tenant_id)
+  }
+}
+
+Table vehicle_brands {
+  id uuid [pk, default: 'gen_random_uuid()']
+  name text [not null]
+  created_at timestamptz [not null, default: 'now()']
+  updated_at timestamptz [not null, default: 'now()']
+  deleted_at timestamptz
+
+  indexes {
+    (name) [unique]
+  }
+}
+
+Table vehicle_models {
+  id uuid [pk, default: 'gen_random_uuid()']
+  brand_id uuid [not null]
+  name text [not null]
+  created_at timestamptz [not null, default: 'now()']
+  updated_at timestamptz [not null, default: 'now()']
+  deleted_at timestamptz
+
+  indexes {
+    (brand_id, name) [unique]
+  }
+}
+
+Table vehicles {
+  id uuid [pk, default: 'gen_random_uuid()']
+  tenant_id uuid [not null]
+  brand_id uuid [not null]
+  model_id uuid [not null]
+  year integer [not null]
+  displacement integer [not null, note: 'cc']
+  current_mileage integer [not null, note: 'km, must be >= last fuel_record.mileage']
+  owner_id uuid [not null, note: 'Current owner (user id)']
+  created_at timestamptz [not null, default: 'now()']
+  updated_at timestamptz [not null, default: 'now()']
+  deleted_at timestamptz
+
+  indexes {
+    (tenant_id, id) [unique]
+    (tenant_id, owner_id)
+    (tenant_id, brand_id, model_id)
+  }
+}
+
+Table vehicle_ownerships {
+  id uuid [pk, default: 'gen_random_uuid()']
+  tenant_id uuid [not null]
+  vehicle_id uuid [not null]
+  user_id uuid [not null]
+  is_owner boolean [not null, default: false, note: 'True if owner, false if user']
+  joined_at timestamptz [not null, default: 'now()']
+  left_at timestamptz
+  created_at timestamptz [not null, default: 'now()']
+  updated_at timestamptz [not null, default: 'now()']
+  deleted_at timestamptz
+
+  indexes {
+    (tenant_id, vehicle_id, user_id, is_owner) [unique]
+    (tenant_id, user_id)
+    (tenant_id, vehicle_id)
+  }
+}
+
+Table gas_stations {
+  id uuid [pk, default: 'gen_random_uuid()']
+  brand brand_code [not null]
+  name text [not null]
+  latitude numeric(10,7) [not null]
+  longitude numeric(10,7) [not null]
+  created_at timestamptz [not null, default: 'now()']
+  updated_at timestamptz [not null, default: 'now()']
+  deleted_at timestamptz
+
+  indexes {
+    (brand)
+    (name)
+    (latitude, longitude)
+  }
+}
+
+Table fuel_prices {
+  id uuid [pk, default: 'gen_random_uuid()']
+  brand brand_code [not null]
+  fuel_type fuel_type [not null]
+  price numeric(12,2) [not null, note: 'Must be > 0']
+  effective_date date [not null, note: 'Date the price becomes effective']
+  created_at timestamptz [not null, default: 'now()']
+  updated_at timestamptz [not null, default: 'now()']
+
+  indexes {
+    (brand, fuel_type, effective_date) [unique]
+    (brand, fuel_type)
+    (effective_date)
+  }
+}
+
+Table fuel_records {
+  id uuid [pk, default: 'gen_random_uuid()']
+  tenant_id uuid [not null]
+  vehicle_id uuid [not null]
+  user_id uuid [not null, note: 'Who performed fueling']
+  gas_station_id uuid [not null]
+  fuel_type fuel_type [not null]
+  price_per_liter numeric(12,2) [not null, note: 'Must be > 0']
+  liters numeric(8,3) [not null, note: 'Must be > 0']
+  fueling_method fueling_method [not null]
+  mileage integer [not null, note: 'Must be >= previous record for this vehicle']
+  fueled_at timestamptz [not null]
+  created_at timestamptz [not null, default: 'now()']
+  updated_at timestamptz [not null, default: 'now()']
+
+  indexes {
+    (tenant_id, vehicle_id, fueled_at)
+    (tenant_id, user_id, fueled_at)
+  }
+}
+
+// Tenant relationships
+Ref: users.tenant_id > tenants.id [delete: cascade]
+Ref: vehicles.tenant_id > tenants.id [delete: cascade]
+Ref: vehicle_ownerships.tenant_id > tenants.id [delete: cascade]
+Ref: fuel_records.tenant_id > tenants.id [delete: cascade]
+
+// Global shared table relationships (simple FKs)
+Ref: vehicles.brand_id > vehicle_brands.id [delete: restrict]
+Ref: vehicles.model_id > vehicle_models.id [delete: restrict]
+Ref: vehicle_models.brand_id > vehicle_brands.id [delete: restrict]
+Ref: fuel_records.gas_station_id > gas_stations.id [delete: restrict]
+
+// Multi-tenant safe composite FKs
+Ref: vehicles.(tenant_id, owner_id) > users.(tenant_id, id) [delete: restrict]
+Ref: vehicle_ownerships.(tenant_id, vehicle_id) > vehicles.(tenant_id, id) [delete: cascade]
+Ref: vehicle_ownerships.(tenant_id, user_id) > users.(tenant_id, id) [delete: restrict]
+Ref: fuel_records.(tenant_id, vehicle_id) > vehicles.(tenant_id, id) [delete: cascade]
+Ref: fuel_records.(tenant_id, user_id) > users.(tenant_id, id) [delete: restrict]

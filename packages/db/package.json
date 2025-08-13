@@ -1,0 +1,26 @@
+{
+  "name": "@repo/db",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "sideEffects": false,
+  "scripts": {
+    "db:pull": "prisma db pull --schema ./prisma/schema.prisma",
+    "db:generate": "prisma generate --schema ./prisma/schema.prisma",
+    "db:migrate": "prisma migrate dev --schema ./prisma/schema.prisma",
+    "db:studio": "prisma studio --schema ./prisma/schema.prisma"
+  },
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    }
+  },
+  "dependencies": {
+    "@prisma/client": "^6.13.0",
+    "prisma": "^6.13.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.3"
+  }
+}
