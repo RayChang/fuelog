@@ -3,19 +3,127 @@
   "ui": "tui",
   "tasks": {
     "build": {
-      "dependsOn": ["^build"],
-      "inputs": ["$TURBO_DEFAULT$", ".env*"],
-      "outputs": [".next/**", "!.next/cache/**"]
+      "dependsOn": [
+        "^build"
+      ],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        ".env*"
+      ],
+      "outputs": [
+        ".next/**",
+        "!.next/cache/**"
+      ]
     },
     "lint": {
-      "dependsOn": ["^lint"]
+      "dependsOn": [
+        "^lint"
+      ]
     },
     "check-types": {
-      "dependsOn": ["^check-types"]
+      "dependsOn": [
+        "^check-types"
+      ]
     },
     "dev": {
       "cache": false,
       "persistent": true
+    },
+    // Python related tasks
+    "python:install": {
+      "inputs": [
+        "pyproject.toml",
+        "uv.lock"
+      ],
+      "outputs": [
+        ".venv/**"
+      ]
+    },
+    "python:lint": {
+      "dependsOn": [
+        "python:install"
+      ],
+      "inputs": [
+        "**/*.py",
+        "pyproject.toml"
+      ],
+      "outputs": []
+    },
+    "python:type-check": {
+      "dependsOn": [
+        "python:install"
+      ],
+      "inputs": [
+        "**/*.py",
+        "pyproject.toml"
+      ],
+      "outputs": []
+    },
+    "python:test": {
+      "dependsOn": [
+        "python:install"
+      ],
+      "inputs": [
+        "**/*.py",
+        "pyproject.toml"
+      ],
+      "outputs": [
+        "coverage.xml",
+        ".coverage"
+      ]
+    },
+    "python:run": {
+      "dependsOn": [
+        "python:install"
+      ],
+      "cache": false,
+      "persistent": true
+    },
+    // Database related tasks
+    "db:pull": {
+      "inputs": [
+        ".env*",
+        "prisma/schema.prisma"
+      ],
+      "outputs": [
+        "prisma/schema.prisma"
+      ]
+    },
+    "db:generate": {
+      "dependsOn": [
+        "db:pull"
+      ],
+      "inputs": [
+        "prisma/schema.prisma"
+      ],
+      "outputs": [
+        "generated/**"
+      ]
+    },
+    "db:migrate": {
+      "dependsOn": [
+        "db:generate"
+      ],
+      "inputs": [
+        "prisma/schema.prisma",
+        "prisma/migrations/**",
+        ".env*"
+      ],
+      "outputs": [
+        "prisma/migrations/**"
+      ]
+    },
+    "db:studio": {
+      "dependsOn": [
+        "db:generate"
+      ],
+      "cache": false,
+      "persistent": true
+    },
+    "db:postinstall": {
+      "dependsOn": [
+        "db:generate"
+      ]
     }
   }
 }
