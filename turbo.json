@@ -119,11 +119,6 @@
       ],
       "cache": false,
       "persistent": true
-    },
-    "db:postinstall": {
-      "dependsOn": [
-        "db:generate"
-      ]
     }
   }
 }

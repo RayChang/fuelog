@@ -11,7 +11,6 @@
     "db:generate": "turbo run db:generate",
     "db:migrate": "turbo run db:migrate",
     "db:studio": "turbo run db:studio",
-    "db:postinstall": "turbo run db:postinstall",
     "python:sync": "turbo run python:sync",
     "python:lint": "turbo run python:lint",
     "python:type-check": "turbo run python:type-check",
