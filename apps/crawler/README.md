@@ -1,8 +1,6 @@
-
 # Fuelog Crawler
 
 A modern Python data crawler tool built with [typer](https://typer.tiangolo.com/) CLI framework. Features web scraping capabilities with httpx and BeautifulSoup, data validation with Pydantic, and comprehensive development tooling.
-
 
 ## 📁 Project Structure
 
@@ -24,7 +22,6 @@ apps/crawler/
 └── README.md               # Project documentation
 ```
 
-
 ## 🚀 Quick Start
 
 ### Install Dependencies
@@ -36,8 +33,6 @@ uv sync
 # Install only production dependencies
 uv sync --no-dev
 ```
-
-
 
 ### CLI Usage Examples
 
@@ -52,8 +47,6 @@ fuelog-crawler info
 python -m fuelog_crawler info
 ```
 
-
-
 ### System Installation
 
 ```bash
@@ -63,7 +56,6 @@ uv tool install .
 # Use the installed command
 fuelog-crawler hello
 ```
-
 
 ## 🛠️ Development
 
@@ -97,7 +89,6 @@ npm run test:watch
 npm run build
 ```
 
-
 ## 🏗️ Turbo Integration
 
 This project is integrated into the monorepo's turbo workflow:
@@ -109,10 +100,10 @@ pnpm turbo run python:lint --filter=crawler
 pnpm turbo run python:run --filter=crawler
 ```
 
-
 ## 📦 Tech Stack
 
 ### Core Dependencies
+
 - **Python 3.13+** - Runtime environment
 - **httpx** - Modern HTTP client for web requests
 - **BeautifulSoup4** - HTML/XML parsing
@@ -120,20 +111,18 @@ pnpm turbo run python:run --filter=crawler
 - **Typer** - CLI framework with type hints
 
 ### Development Tools
+
 - **uv** - Fast dependency management and tooling
 - **Hatchling** - Modern build backend
 - **Ruff** - Fast linting and code formatting
 - **MyPy** - Static type checking (with lxml-stubs)
 - **pytest** - Testing framework
 
-
 ## 🗑️ Uninstall
 
 ```bash
 uv tool uninstall fuelog-crawler
 ```
-
-
 
 ## 💡 CLI Extension Guide
 
@@ -161,6 +150,7 @@ if __name__ == "__main__":
 ### Key Modules
 
 - **`config.py`** - Configuration management using Pydantic models
+
   ```python
   from fuelog_crawler.config import CrawlerConfig
   config = CrawlerConfig(rate_limit=2.0, timeout=60)
@@ -184,7 +174,6 @@ if __name__ == "__main__":
 - Tests use dynamic path resolution for better portability
 - Type checking includes lxml stubs for comprehensive coverage
 - Use `npm run test:watch` for TDD workflow (runs only failed tests)
-
 
 ## 📄 License
 
