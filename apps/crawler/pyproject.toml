@@ -28,3 +28,50 @@ dev = [
     "ruff>=0.12.8",
     "lxml-stubs>=0.5.1",
 ]
+
+[tool.ruff]
+target-version = "py313"
+line-length = 88
+
+[tool.ruff.lint]
+# Modern Python best practices rule set with web scraping focus
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings  
+    "F",   # Pyflakes
+    "I",   # isort (import sorting)
+    "N",   # pep8-naming
+    "UP",  # pyupgrade (modern Python syntax)
+    "B",   # flake8-bugbear - catches subtle bugs
+    "S",   # bandit (security) - critical for web scraping
+    "C4",  # flake8-comprehensions
+    "PIE", # flake8-pie (unnecessary code)
+    "RUF", # Ruff-specific rules
+    # Enhanced security and web scraping specific rules
+    "A",    # flake8-builtins (avoid shadowing builtins)
+    "T20",  # flake8-print (no print statements in production)
+    "DTZ",  # flake8-datetimez (proper timezone handling)
+    "SLF",  # flake8-self (proper self usage in classes)
+    "PERF", # perflint - performance anti-patterns for web scraping
+]
+
+# Common ignores for practical development
+ignore = [
+    "S101",  # Use of assert (common in tests)
+    "S603",  # subprocess call without shell=True check
+    "S607",  # Starting a process with a partial executable path
+    "T201",  # Allow print() in CLI applications and debugging
+]
+
+[tool.ruff.format]
+# Black-compatible formatting
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"
+
+[tool.ruff.lint.isort]
+# Import sorting configuration
+known-first-party = ["fuelog_crawler"]
+force-single-line = false
+combine-as-imports = true
