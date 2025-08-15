@@ -56,8 +56,7 @@ export const nextJsConfig = [
       semi: ['error', 'always'],
       // Consistent comma dangle
       'comma-dangle': ['error', 'always-multiline'],
-      // Consistent indentation
-      indent: ['error', 2],
+      // Indentation handled by Prettier
       // No unused variables
       '@typescript-eslint/no-unused-vars': ['error'],
       // Allow console for development

@@ -2,8 +2,8 @@
 npx lint-staged
 
 # Run type checking for TypeScript projects with changes
-# Check if there are any TypeScript files in the staged changes
-if git diff --cached --name-only | grep -E '\.(ts|tsx)$' > /dev/null; then
+# Check if there are any TypeScript files or tsconfig changes in the staged changes
+if git diff --cached --name-only | grep -E '\.(ts|tsx)$|tsconfig.*\.json$' > /dev/null; then
   echo "Running TypeScript type checking..."
   pnpm check-types
 fi
