@@ -9,7 +9,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `pnpm dev` - Start development servers for all apps
 - `pnpm build` - Build all apps and packages
 - `pnpm lint` - Run ESLint across all workspaces
-- `pnpm format` - Format code with Prettier
+- `pnpm format` - Format code with Prettier (all supported file types)
+- `pnpm format:check` - Check if files are properly formatted
 - `pnpm check-types` - Run TypeScript type checking
 
 ### Database Commands
@@ -94,7 +95,7 @@ This project uses Husky for Git hooks to ensure code quality and consistent comm
 
 Automatically run on every commit:
 
-- **Prettier formatting** for TypeScript, JavaScript, Markdown, and JSON files
+- **Prettier formatting** for TypeScript, JavaScript, JSON, CSS, Markdown, and YAML files
 - **Ruff formatting and linting** for Python files in the crawler app
 - **TypeScript type checking** when TS files are modified
 
@@ -123,3 +124,38 @@ git commit --no-verify -m "emergency fix"
 ### Setup
 
 Git hooks are automatically installed when running `pnpm install` via the prepare script.
+
+## Code Formatting
+
+This project uses Prettier with a standardized configuration inspired by industry best practices and Airbnb style guide principles.
+
+### Prettier Configuration
+
+Key formatting rules in `.prettierrc`:
+
+- **Line Width**: 100 characters (optimized for modern displays)
+- **Indentation**: 2 spaces (no tabs)
+- **Quotes**: Single quotes for strings
+- **Semicolons**: Always required
+- **Trailing Commas**: ES5 compatible
+- **Arrow Functions**: Avoid parentheses when possible
+- **End of Line**: LF (Unix-style)
+
+### Supported File Types
+
+Prettier automatically formats:
+
+- TypeScript/JavaScript files (`.ts`, `.tsx`, `.js`, `.jsx`)
+- JSON configuration files
+- CSS/SCSS stylesheets
+- Markdown documentation
+- YAML configuration files
+
+### Ignored Files
+
+See `.prettierignore` for files excluded from formatting:
+
+- Generated files (Prisma client, build outputs)
+- Dependencies and lock files
+- System and IDE files
+- Python files (handled by Ruff in crawler app)

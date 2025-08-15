@@ -1,0 +1,59 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Build outputs
+.next/
+out/
+build/
+dist/
+
+# Generated files
+packages/db/generated/
+*.generated.*
+
+# Database
+*.sql
+*.db
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+.mypy_cache/
+.pytest_cache/
+.coverage
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# System files
+.DS_Store
+*.pem
+
+# Lock files
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+uv.lock
+
+# Documentation
+CHANGELOG.md
+LICENSE
+*.license
+
+# IDE
+.vscode/settings.json
+.idea/

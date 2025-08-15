@@ -6,7 +6,8 @@
     "build": "turbo run build",
     "dev": "turbo run dev",
     "lint": "turbo run lint",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,css,scss,md,yaml,yml}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,css,scss,md,yaml,yml}\"",
     "check-types": "turbo run check-types",
     "db:pull": "turbo run db:pull",
     "db:generate": "turbo run db:generate",
@@ -35,7 +36,7 @@
     "*.{ts,tsx,js,jsx}": [
       "prettier --write"
     ],
-    "*.{md,json,yaml,yml}": [
+    "*.{md,json,yaml,yml,css,scss}": [
       "prettier --write"
     ],
     "apps/crawler/**/*.py": [
