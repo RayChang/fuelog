@@ -34,6 +34,32 @@ export const config = [
       ...pluginReactHooks.configs.recommended.rules,
       // React scope no longer necessary with new JSX transform.
       'react/react-in-jsx-scope': 'off',
+      // Airbnb-inspired rules
+      // Allow JSX in .tsx files
+      'react/jsx-filename-extension': ['error', { extensions: ['.jsx', '.tsx'] }],
+      // More flexible with default props in TypeScript
+      'react/require-default-props': 'off',
+      // Consistent quote style
+      quotes: ['error', 'single'],
+      // Semicolons required
+      semi: ['error', 'always'],
+      // Consistent comma dangle
+      'comma-dangle': ['error', 'always-multiline'],
+      // Consistent indentation
+      indent: ['error', 2],
+      // No unused variables
+      '@typescript-eslint/no-unused-vars': ['error'],
+      // Allow console for development and CLI tools
+      'no-console': ['warn'],
+      // More flexible with underscore dangle for private methods
+      'no-underscore-dangle': [
+        'error',
+        {
+          allow: ['__dirname', '__filename', '_id', '_rev'],
+          allowAfterThis: true,
+          allowAfterSuper: true,
+        },
+      ],
     },
   },
 ];

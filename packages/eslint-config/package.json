@@ -6,9 +6,7 @@
   "exports": {
     "./base": "./base.js",
     "./next-js": "./next.js",
-    "./react-internal": "./react-internal.js",
-    "./airbnb": "./airbnb.js",
-    "./airbnb-next": "./airbnb-next.js"
+    "./react-internal": "./react-internal.js"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
