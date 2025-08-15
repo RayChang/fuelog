@@ -95,7 +95,6 @@ This project uses Husky for Git hooks to ensure code quality and consistent comm
 Automatically run on every commit:
 
 - **Prettier formatting** for TypeScript, JavaScript, Markdown, and JSON files
-- **ESLint checking** for TypeScript and JavaScript files
 - **Ruff formatting and linting** for Python files in the crawler app
 - **TypeScript type checking** when TS files are modified
 
