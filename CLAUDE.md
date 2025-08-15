@@ -96,6 +96,7 @@ This project uses Husky for Git hooks to ensure code quality and consistent comm
 Automatically run on every commit:
 
 - **Prettier formatting** for TypeScript, JavaScript, JSON, CSS, Markdown, and YAML files
+- **ESLint checking with Airbnb-inspired rules** for TypeScript and JavaScript files
 - **Ruff formatting and linting** for Python files in the crawler app
 - **TypeScript type checking** when TS files are modified
 
@@ -141,6 +142,20 @@ Key formatting rules in `.prettierrc`:
 - **Arrow Functions**: Avoid parentheses when possible
 - **End of Line**: LF (Unix-style)
 
+### Prettier Plugins
+
+**Auto Import Sorting:**
+
+- Automatic import statement organization with `@ianvs/prettier-plugin-sort-imports`
+- Import order: React → Next.js → Third-party → @repo packages → Relative imports
+- Supports TypeScript and JSX parsing
+
+**Tailwind CSS Class Sorting:**
+
+- Automatic Tailwind class name ordering with `prettier-plugin-tailwindcss`
+- Follows official Tailwind CSS class order
+- Improves readability and consistency
+
 ### Supported File Types
 
 Prettier automatically formats:
@@ -159,3 +174,44 @@ See `.prettierignore` for files excluded from formatting:
 - Dependencies and lock files
 - System and IDE files
 - Python files (handled by Ruff in crawler app)
+
+## ESLint Configuration
+
+This project uses custom ESLint configurations with Airbnb-inspired rules, optimized for ESLint 9 flat config format.
+
+### Available Configurations
+
+- **`@repo/eslint-config/react-internal`** - For React component libraries with Airbnb-style rules
+- **`@repo/eslint-config/next-js`** - For Next.js applications with React and Next.js specific rules
+- **`@repo/eslint-config/base`** - Base configuration with TypeScript and Turbo support
+
+### Key ESLint Rules (Airbnb-inspired)
+
+- **Quotes**: Single quotes required (`'string'`)
+- **Semicolons**: Always required (`;`)
+- **Indentation**: 2 spaces
+- **Comma dangle**: Required in multiline structures
+- **React JSX**: Allowed in `.tsx` files
+- **React scope**: Not required with new JSX transform
+- **TypeScript**: Strict unused variable checking
+- **Console**: Warnings allowed for development
+
+### ESLint Plugins Included
+
+- **TypeScript ESLint** - Type-aware linting
+- **React** - React-specific rules
+- **React Hooks** - Hooks rules enforcement
+- **Next.js** - Next.js best practices (in airbnb-next config)
+- **Turbo** - Monorepo-aware linting
+
+### Usage in Apps
+
+```javascript
+// apps/web/eslint.config.mjs
+import { nextJsConfig } from '@repo/eslint-config/next-js';
+export default nextJsConfig;
+
+// packages/ui/eslint.config.mjs
+import { config } from '@repo/eslint-config/react-internal';
+export default config;
+```
