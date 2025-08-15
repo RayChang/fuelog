@@ -48,10 +48,11 @@ select = [
     "PIE", # flake8-pie (unnecessary code)
     "RUF", # Ruff-specific rules
     # Enhanced security and web scraping specific rules
-    "A",   # flake8-builtins (avoid shadowing builtins)
-    "T20", # flake8-print (no print statements in production)
-    "DTZ", # flake8-datetimez (proper timezone handling)
-    "SLF", # flake8-self (proper self usage in classes)
+    "A",    # flake8-builtins (avoid shadowing builtins)
+    "T20",  # flake8-print (no print statements in production)
+    "DTZ",  # flake8-datetimez (proper timezone handling)
+    "SLF",  # flake8-self (proper self usage in classes)
+    "PERF", # perflint - performance anti-patterns for web scraping
 ]
 
 # Common ignores for practical development
