@@ -45,7 +45,7 @@
   },
   "python.analysis.autoImportCompletions": true,
   "python.analysis.typeCheckingMode": "strict",
-  "python.defaultInterpreterPath": "./apps/crawler/.venv/bin/python",
+  "python.defaultInterpreterPath": "${workspaceFolder}/apps/crawler/.venv/bin/python",
   "python.terminal.activateEnvironment": true,
   "ruff.enable": true,
   "ruff.importStrategy": "fromEnvironment",
