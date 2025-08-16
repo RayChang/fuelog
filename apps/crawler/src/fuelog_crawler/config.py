@@ -1,5 +1,4 @@
 from pydantic import BaseModel
-from typing import Optional
 
 
 class FuelogCrawlerConfig(BaseModel):
@@ -9,5 +8,5 @@ class FuelogCrawlerConfig(BaseModel):
     output_format: str = "json"
 
     # Optional fields for advanced configuration
-    max_depth: Optional[int] = None
+    max_depth: int | None = None
     follow_links: bool = True

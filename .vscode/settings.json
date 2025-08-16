@@ -1,8 +1,238 @@
 {
+  // =============================================================================
+  // Package Manager Settings
+  // =============================================================================
+  "npm.packageManager": "pnpm",
+
+  // =============================================================================
+  // ESLint Settings (Monorepo Support)
+  // =============================================================================
   "eslint.workingDirectories": [
     {
       "mode": "auto"
     }
   ],
-  "kiroAgent.configureMCP": "Disabled"
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact"
+  ],
+
+  // =============================================================================
+  // Editor and Formatting Settings
+  // =============================================================================
+  "editor.formatOnSave": true,
+  "editor.formatOnPaste": true,
+  "editor.tabSize": 2,
+  "editor.rulers": [80, 88, 100],
+  "editor.trimAutoWhitespace": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit",
+    "source.organizeImports": "never"
+  },
+
+  // =============================================================================
+  // Python Settings (Crawler App)
+  // =============================================================================
+  "[python]": {
+    "editor.defaultFormatter": "charliermarsh.ruff",
+    "editor.codeActionsOnSave": {
+      "source.fixAll.ruff": "explicit",
+      "source.organizeImports.ruff": "explicit"
+    },
+    "editor.formatOnSave": true
+  },
+  "python.analysis.autoImportCompletions": true,
+  "python.analysis.typeCheckingMode": "strict",
+  "python.defaultInterpreterPath": "./apps/crawler/.venv/bin/python",
+  "python.terminal.activateEnvironment": true,
+  "ruff.enable": true,
+  "ruff.importStrategy": "fromEnvironment",
+  "ruff.path": ["apps/crawler/.venv/bin/ruff"],
+
+  // =============================================================================
+  // JavaScript/TypeScript Settings
+  // =============================================================================
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[javascriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[jsonc]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[markdown]": {
+    "editor.wordWrap": "on",
+    "editor.formatOnSave": false
+  },
+
+  // =============================================================================
+  // Prettier Settings (Project Standard)
+  // =============================================================================
+  "prettier.enable": true,
+  "prettier.requireConfig": true,
+
+  // =============================================================================
+  // TypeScript Settings
+  // =============================================================================
+  "typescript.updateImportsOnFileMove.enabled": "always",
+  "typescript.preferences.includePackageJsonAutoImports": "on",
+  "typescript.suggest.autoImports": true,
+  "typescript.preferences.importModuleSpecifier": "relative",
+
+  // =============================================================================
+  // JavaScript Settings
+  // =============================================================================
+  "javascript.updateImportsOnFileMove.enabled": "always",
+  "javascript.suggest.autoImports": true,
+
+  // =============================================================================
+  // File Associations
+  // =============================================================================
+  "files.associations": {
+    "*.toml": "toml",
+    "pyproject.toml": "toml",
+    "*.css": "tailwindcss"
+  },
+
+  // =============================================================================
+  // TailwindCSS Settings
+  // =============================================================================
+  "tailwindCSS.includeLanguages": {
+    "typescript": "javascript",
+    "typescriptreact": "javascript"
+  },
+  "tailwindCSS.experimental.classRegex": [
+    "tw`([^`]*)",
+    "tw\\..+`([^`]*)",
+    "tw\\(.*?\\).*?`([^`]*)",
+    ["clsx\\(([^)]*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)"],
+    ["classnames\\(([^)]*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)"],
+    ["cn\\(([^)]*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)"]
+  ],
+
+  // =============================================================================
+  // Emmet Settings (React/Next.js Support)
+  // =============================================================================
+  "emmet.includeLanguages": {
+    "javascript": "javascriptreact",
+    "javascriptreact": "javascriptreact",
+    "typescript": "typescriptreact",
+    "typescriptreact": "typescriptreact"
+  },
+  "emmet.triggerExpansionOnTab": true,
+
+  // =============================================================================
+  // Project-specific Spell Check
+  // =============================================================================
+  "cSpell.words": [
+    "fuelog",
+    "pnpm",
+    "turborepo",
+    "nextjs",
+    "tailwindcss",
+    "prisma",
+    "httpx",
+    "beautifulsoup",
+    "pydantic",
+    "typer",
+    "ruff",
+    "mypy",
+    "clsx",
+    "lucide",
+    "monorepo"
+  ],
+
+  // =============================================================================
+  // File Nesting Display (Monorepo Friendly)
+  // =============================================================================
+  "explorer.fileNesting.enabled": true,
+  "explorer.fileNesting.patterns": {
+    "*.ts": "${capture}.js",
+    "*.tsx": "${capture}.ts",
+    "*.jsx": "${capture}.js",
+    "package.json": "package-lock.json, pnpm-lock.yaml, yarn.lock, bun.lockb",
+    "tsconfig.json": "tsconfig.*.json",
+    "next.config.*": "next-env.d.ts",
+    "tailwind.config.*": "tailwind.config.js, postcss.config.js",
+    ".env": ".env.*",
+    "README.md": "CHANGELOG.md, LICENSE, CONTRIBUTING.md",
+    "pyproject.toml": "uv.lock"
+  },
+
+  // =============================================================================
+  // Git and Version Control
+  // =============================================================================
+  "git.ignoreLimitWarning": true,
+  "git.detectSubmodules": false,
+
+  // =============================================================================
+  // Search and File Exclude (Performance Optimization)
+  // =============================================================================
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/dist": true,
+    "**/build": true,
+    "**/.next": true,
+    "**/.turbo": true,
+    "**/coverage": true,
+    "**/pnpm-lock.yaml": true,
+    "**/.venv": true,
+    "**/__pycache__": true,
+    "**/.ruff_cache": true,
+    "**/.mypy_cache": true
+  },
+  "files.exclude": {
+    "**/.turbo": true,
+    "**/node_modules": true,
+    "**/.venv": true,
+    "**/__pycache__": true,
+    "**/.ruff_cache": true,
+    "**/.mypy_cache": true
+  },
+  "files.watcherExclude": {
+    "**/.git/objects/**": true,
+    "**/.git/subtree-cache/**": true,
+    "**/node_modules/**": true,
+    "**/.next/**": true,
+    "**/.turbo/**": true,
+    "**/dist/**": true,
+    "**/.venv/**": true,
+    "**/__pycache__/**": true
+  },
+  "files.trimTrailingWhitespace": true,
+  "files.insertFinalNewline": true,
+
+  // =============================================================================
+  // Workspace Tab Customization (Monorepo Friendly)
+  // =============================================================================
+  "workbench.editor.customLabels.patterns": {
+    "**/apps/*/src/**/*.{ts,tsx,js,jsx}": "${dirname}/${filename} (${dirname(1)})",
+    "**/packages/*/src/**/*.{ts,tsx,js,jsx}": "${dirname}/${filename} (${dirname(1)})",
+    "**/index.{ts,tsx,js,jsx}": "${dirname} (index)",
+    "**/apps/crawler/**/*.py": "${dirname}/${filename} (crawler)"
+  },
+
+  // =============================================================================
+  // Terminal Settings
+  // =============================================================================
+  "terminal.integrated.defaultProfile.osx": "zsh",
+  "terminal.integrated.cwd": "${workspaceFolder}",
+
+  // =============================================================================
+  // Other Tool Settings
+  // =============================================================================
+  "kiroAgent.configureMCP": "Disabled",
+  "debug.console.acceptSuggestionOnEnter": "off"
 }
