@@ -2,23 +2,24 @@
 Fuelog Crawler - Command Line Interface
 
 This module provides the main CLI functionality for the Fuelog Crawler tool.
-It serves as the primary entry point for both the installed command and 
+It serves as the primary entry point for both the installed command and
 module execution.
 
 The CLI provides basic web crawling capabilities with optional advanced features.
 """
 
-
 import typer
+
 from fuelog_crawler import __version__
 
 
 def test_core_features():
     """Test core crawler functionality (always available)."""
     try:
-        import httpx
         import bs4
+        import httpx
         import pydantic
+
         print("✅ Core crawler tools available:")
         print(f"  - httpx: {httpx.__version__}")
         print(f"  - beautifulsoup4: {bs4.__version__}")
@@ -34,6 +35,7 @@ def test_advanced_features():
     try:
         import lxml
         import typer
+
         print("✅ Advanced tools available:")
         print(f"  - lxml: {lxml.__version__}")
         print(f"  - typer: {typer.__version__}")
@@ -43,13 +45,14 @@ def test_advanced_features():
         return False
 
 
-
 app = typer.Typer()
+
 
 @app.command()
 def hello(name: str = "world"):
     """Say hello!"""
     print(f"👋 Hello, {name}!")
+
 
 @app.command()
 def info():
@@ -64,8 +67,10 @@ def info():
         print("\n💡 Install advanced features with:")
         print("   uv sync --group advanced")
 
+
 def main():
     app()
+
 
 if __name__ == "__main__":
     main()

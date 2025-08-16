@@ -12,7 +12,7 @@ except ImportError:
     try:
         import tomllib
         from pathlib import Path
-        
+
         pyproject_path = Path(__file__).parent.parent.parent / "pyproject.toml"
         if pyproject_path.exists():
             with open(pyproject_path, "rb") as f:
