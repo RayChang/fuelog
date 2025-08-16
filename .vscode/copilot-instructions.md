@@ -4,6 +4,8 @@
 
 Fuelog is a Turborepo monorepo for fuel tracking application with both web and Python components.
 
+> **Note:** For complete development commands and detailed architecture information, see [CLAUDE.md](../CLAUDE.md) in the project root.
+
 ## Architecture & Workspace Structure
 
 ### Monorepo Layout
@@ -46,6 +48,17 @@ Fuelog is a Turborepo monorepo for fuel tracking application with both web and P
 - Python 3.13+ required, use modern async/await patterns for web scraping
 - Use uv for Python dependency management in crawler app
 - Follow Ruff rules: E, W, F, I, N, UP, B, S, C4, PIE, RUF, A, T20, DTZ, SLF, PERF
+
+#### Security Best Practices for Web Scraping
+
+- Implement rate limiting to respect Taiwan fuel station APIs (use httpx rate limiting)
+- Use proper User-Agent headers to identify as legitimate crawler
+- Implement exponential backoff for failed requests
+- Never hardcode API keys or credentials in source code
+- Use environment variables for sensitive configuration
+- Respect robots.txt and terms of service
+- Implement request timeouts to prevent hanging connections
+- Use HTTPS whenever possible for secure data transmission
 
 ### Database & Multi-tenant Architecture
 
