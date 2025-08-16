@@ -4,7 +4,7 @@
 
 Fuelog is a Turborepo monorepo for fuel tracking application with both web and Python components.
 
-> **Note:** For complete development commands and detailed architecture information, see [CLAUDE.md](../CLAUDE.md) in the project root.
+> **Note:** For complete development commands and detailed architecture information, see [CLAUDE.md](./CLAUDE.md) in the project root.
 
 ## Architecture & Workspace Structure
 
@@ -198,6 +198,7 @@ export function FuelRecordList({ tenantId }: FuelRecordListProps) {
 import asyncio
 from datetime import datetime
 from typing import List
+from urllib.robotparser import RobotFileParser
 
 import httpx
 from bs4 import BeautifulSoup
@@ -211,10 +212,46 @@ class FuelPrice(BaseModel):
     location: str
     updated_at: datetime
 
+async def check_robots_txt(base_url: str, user_agent: str = "*") -> bool:
+    """Check if crawling is allowed according to robots.txt"""
+    try:
+        rp = RobotFileParser()
+        rp.set_url(f"{base_url}/robots.txt")
+        rp.read()
+        return rp.can_fetch(user_agent, base_url)
+    except Exception:
+        # If robots.txt is not accessible, assume crawling is allowed
+        return True
+
 async def fetch_fuel_prices(brand: str) -> List[FuelPrice]:
     """Fetch fuel prices for Taiwan fuel brands: CPC, FORMOSA, NPC, TAYA, FUMAO"""
-    async with httpx.AsyncClient() as client:
-        response = await client.get(f"https://example.com/api/{brand}")
+    base_url = f"https://example.com"
+    user_agent = "FuelogCrawler/1.0 (+https://fuelog.app/crawler)"
+
+    # Check robots.txt before crawling
+    if not await check_robots_txt(base_url, user_agent):
+        typer.echo(f"Crawling not allowed by robots.txt for {base_url}")
+        return []
+
+    headers = {
+        "User-Agent": user_agent,
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+    }
+
+    async with httpx.AsyncClient(
+        timeout=30.0,
+        limits=httpx.Limits(max_keepalive_connections=5, max_connections=10)
+    ) as client:
+        # Rate limiting: 1 request per second
+        await asyncio.sleep(1)
+
+        response = await client.get(
+            f"{base_url}/api/{brand}",
+            headers=headers,
+            follow_redirects=True
+        )
+        response.raise_for_status()
+
         soup = BeautifulSoup(response.text, 'html.parser')
 
         prices = []
@@ -236,8 +273,15 @@ def main(brand: str = typer.Argument(..., help="Fuel brand to crawl")) -> None:
         typer.echo(f"Invalid brand: {brand}")
         raise typer.Exit(1)
 
-    prices = asyncio.run(fetch_fuel_prices(brand))
-    typer.echo(f"Fetched {len(prices)} prices for {brand}")
+    try:
+        prices = asyncio.run(fetch_fuel_prices(brand))
+        typer.echo(f"Fetched {len(prices)} prices for {brand}")
+    except httpx.HTTPStatusError as e:
+        typer.echo(f"HTTP error: {e.response.status_code}")
+        raise typer.Exit(1)
+    except httpx.RequestError as e:
+        typer.echo(f"Request error: {e}")
+        raise typer.Exit(1)
 
 if __name__ == "__main__":
     typer.run(main)
